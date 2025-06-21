@@ -19,21 +19,50 @@
   <main class="p-6 max-w-5xl mx-auto">
     <h2 class="text-2xl font-bold mb-4">🧑‍💬 Customer Messages</h2>
 
-    <div class="bg-white shadow rounded p-4 space-y-4">
-      <div class="border-b pb-4">
+    <div class="bg-white shadow rounded p-4 space-y-6" id="messagesContainer">
+      <div class="border-b pb-4 message-block" data-user="john@example.com">
         <p><strong>User:</strong> john@example.com</p>
         <p class="mb-2">“Where is my parcel PP123456789?”</p>
-        <textarea class="w-full border rounded p-2 mb-2" placeholder="Type your reply..."></textarea>
-        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Send Reply</button>
+        <textarea class="w-full border rounded p-2 mb-2 reply-textarea" placeholder="Type your reply..."></textarea>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 send-reply-btn">Send Reply</button>
+        <div class="replies mt-2 text-gray-700"></div>
       </div>
 
-      <div>
+      <div class="border-b pb-4 message-block" data-user="linda@example.com">
         <p><strong>User:</strong> linda@example.com</p>
         <p class="mb-2">“Can I change the delivery address?”</p>
-        <textarea class="w-full border rounded p-2 mb-2" placeholder="Type your reply..."></textarea>
-        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Send Reply</button>
+        <textarea class="w-full border rounded p-2 mb-2 reply-textarea" placeholder="Type your reply..."></textarea>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 send-reply-btn">Send Reply</button>
+        <div class="replies mt-2 text-gray-700"></div>
       </div>
     </div>
   </main>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('messagesContainer');
+    
+    container.addEventListener('click', (e) => {
+      if (e.target.classList.contains('send-reply-btn')) {
+        const messageBlock = e.target.closest('.message-block');
+        const textarea = messageBlock.querySelector('.reply-textarea');
+        const replyText = textarea.value.trim();
+        if (replyText.length === 0) {
+          alert('Please type a reply before sending.');
+          return;
+        }
+        // Append reply below
+        const repliesDiv = messageBlock.querySelector('.replies');
+        const newReply = document.createElement('p');
+        newReply.className = 'bg-blue-100 p-2 rounded mb-1';
+        newReply.textContent = `Admin: ${replyText}`;
+        repliesDiv.appendChild(newReply);
+
+        textarea.value = ''; // clear textarea
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
