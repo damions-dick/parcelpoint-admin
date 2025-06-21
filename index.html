@@ -22,20 +22,24 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
       <div class="bg-blue-700 text-white p-6 rounded shadow">
         <p>Total Parcels</p>
-        <h3 class="text-3xl font-bold">12</h3>
+        <h3 class="text-3xl font-bold" id="totalParcels">1</h3>
       </div>
       <div class="bg-yellow-500 text-white p-6 rounded shadow">
         <p>In Transit</p>
-        <h3 class="text-3xl font-bold">6</h3>
+        <h3 class="text-3xl font-bold" id="inTransit">0</h3>
       </div>
       <div class="bg-green-600 text-white p-6 rounded shadow">
         <p>Delivered</p>
-        <h3 class="text-3xl font-bold">4</h3>
+        <h3 class="text-3xl font-bold" id="delivered">0</h3>
+      </div>
+      <div class="bg-gray-500 text-white p-6 rounded shadow">
+        <p>On Hold</p>
+        <h3 class="text-3xl font-bold" id="onHold">0</h3>
       </div>
     </div>
 
-    <div class="bg-white p-4 rounded shadow">
-      <table class="min-w-full text-sm">
+    <div class="bg-white p-4 rounded shadow overflow-x-auto">
+      <table class="min-w-full text-sm" id="parcelTable">
         <thead class="bg-gray-100">
           <tr>
             <th class="text-left p-3">Tracking #</th>
@@ -47,20 +51,77 @@
           </tr>
         </thead>
         <tbody>
-          <tr class="hover:bg-gray-50">
+          <tr data-tracking="PP123456789" data-status="In Transit">
             <td class="p-3">PP123456789</td>
-            <td class="p-3"><span class="bg-yellow-400 text-white px-2 py-1 rounded">In Transit</span></td>
+            <td class="p-3"><span class="status-label bg-yellow-400 text-white px-2 py-1 rounded">In Transit</span></td>
             <td class="p-3">New York, USA</td>
             <td class="p-3">London, UK</td>
             <td class="p-3">Heathrow Airport</td>
             <td class="p-3 space-x-2">
-              <button class="px-3 py-1 bg-blue-600 text-white rounded">Hold</button>
-              <button class="px-3 py-1 bg-red-600 text-white rounded">Delete</button>
+              <button class="hold-btn px-3 py-1 bg-gray-600 text-white rounded">Hold</button>
+              <button class="deliver-btn px-3 py-1 bg-green-600 text-white rounded">Deliver</button>
+              <button class="delete-btn px-3 py-1 bg-red-600 text-white rounded">Delete</button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
   </main>
+
+<script>
+  function updateStats() {
+    const rows = document.querySelectorAll('#parcelTable tbody tr');
+    let total = rows.length;
+    let inTransit = 0;
+    let delivered = 0;
+    let onHold = 0;
+
+    rows.forEach(row => {
+      const status = row.getAttribute('data-status');
+      if (status === 'In Transit') inTransit++;
+      else if (status === 'Delivered') delivered++;
+      else if (status === 'On Hold') onHold++;
+    });
+
+    document.getElementById('totalParcels').textContent = total;
+    document.getElementById('inTransit').textContent = inTransit;
+    document.getElementById('delivered').textContent = delivered;
+    document.getElementById('onHold').textContent = onHold;
+  }
+
+  function changeStatus(row, newStatus) {
+    row.setAttribute('data-status', newStatus);
+    const statusLabel = row.querySelector('.status-label');
+    statusLabel.textContent = newStatus;
+
+    // Update label color based on status
+    statusLabel.className = 'status-label px-2 py-1 rounded text-white';
+    if (newStatus === 'In Transit') statusLabel.classList.add('bg-yellow-400');
+    else if (newStatus === 'Delivered') statusLabel.classList.add('bg-green-600');
+    else if (newStatus === 'On Hold') statusLabel.classList.add('bg-gray-600');
+    else statusLabel.classList.add('bg-gray-400');
+
+    updateStats();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    updateStats();
+
+    document.querySelector('#parcelTable').addEventListener('click', (e) => {
+      const row = e.target.closest('tr');
+      if (!row) return;
+
+      if (e.target.classList.contains('hold-btn')) {
+        changeStatus(row, 'On Hold');
+      } else if (e.target.classList.contains('deliver-btn')) {
+        changeStatus(row, 'Delivered');
+      } else if (e.target.classList.contains('delete-btn')) {
+        row.remove();
+        updateStats();
+      }
+    });
+  });
+</script>
+
 </body>
-    </html>
+</html>
