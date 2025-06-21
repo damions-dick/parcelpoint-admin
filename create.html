@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ParcelPoint Admin - Create Parcel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-100">
+  <nav class="bg-white p-4 shadow flex justify-between items-center">
+    <h1 class="text-xl font-bold text-blue-700">ParcelPoint Admin</h1>
+    <div class="space-x-4">
+      <a href="index.html" class="hover:text-blue-500">Dashboard</a>
+      <a href="create.html" class="text-blue-700 font-medium">Create Parcel</a>
+      <a href="support.html" class="hover:text-blue-500">Customer Support</a>
+    </div>
+  </nav>
+
+  <main class="p-6 max-w-4xl mx-auto bg-white shadow rounded">
+    <h2 class="text-2xl font-bold mb-6">📦 New Parcel Details</h2>
+    <form class="space-y-6">
+      <div>
+        <label class="block font-semibold mb-1">Tracking Number</label>
+        <input type="text" class="w-full p-3 border rounded" placeholder="e.g. PP123456789" />
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h3 class="font-semibold mb-2">Sender Info</h3>
+          <input type="text" class="w-full p-2 border mb-2 rounded" placeholder="Full Name" />
+          <input type="text" class="w-full p-2 border mb-2 rounded" placeholder="Address" />
+          <input type="email" class="w-full p-2 border mb-2 rounded" placeholder="Email" />
+          <input type="tel" class="w-full p-2 border rounded" placeholder="Phone" />
+        </div>
+        <div>
+          <h3 class="font-semibold mb-2">Receiver Info</h3>
+          <input type="text" class="w-full p-2 border mb-2 rounded" placeholder="Full Name" />
+          <input type="text" class="w-full p-2 border mb-2 rounded" placeholder="Address" />
+          <input type="email" class="w-full p-2 border mb-2 rounded" placeholder="Email" />
+          <input type="tel" class="w-full p-2 border rounded" placeholder="Phone" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <input type="text" class="p-3 border rounded" placeholder="From (City, Country)" />
+        <input type="text" class="p-3 border rounded" placeholder="To (City, Country)" />
+        <select class="p-3 border rounded">
+          <option>Status</option>
+          <option>In Transit</option>
+          <option>Delivered</option>
+          <option>On Hold</option>
+        </select>
+      </div>
+
+      <button class="bg-blue-700 text-white px-6 py-3 rounded hover:bg-blue-800 transition">Submit Parcel</button>
+    </form>
+  </main>
+</body>
+</html>
