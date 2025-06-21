@@ -2,58 +2,178 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>ParcelPoint Admin - Create Parcel</title>
+  <title>ParcelPoint Admin - Create & Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
   <nav class="bg-white p-4 shadow flex justify-between items-center">
     <h1 class="text-xl font-bold text-blue-700">ParcelPoint Admin</h1>
-    <div class="space-x-4">
-      <a href="index.html" class="hover:text-blue-500">Dashboard</a>
-      <a href="create.html" class="text-blue-700 font-medium">Create Parcel</a>
-      <a href="support.html" class="hover:text-blue-500">Customer Support</a>
-    </div>
   </nav>
 
-  <main class="p-6 max-w-4xl mx-auto bg-white shadow rounded">
-    <h2 class="text-2xl font-bold mb-6">📦 New Parcel Details</h2>
-    <form class="space-y-6">
+  <main class="p-6 max-w-7xl mx-auto flex-grow">
+    <h2 class="text-2xl font-bold mb-6">📦 Create New Parcel</h2>
+    <form id="parcelForm" class="space-y-6 bg-white p-6 rounded shadow">
       <div>
-        <label class="block font-semibold mb-1">Tracking Number</label>
-        <input type="text" class="w-full p-3 border rounded" placeholder="e.g. PP123456789" />
+        <label for="trackingNumber" class="block font-semibold mb-1">Tracking Number</label>
+        <input id="trackingNumber" type="text" class="w-full p-3 border rounded" placeholder="e.g. PP123456789" required />
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <h3 class="font-semibold mb-2">Sender Info</h3>
-          <input type="text" class="w-full p-2 border mb-2 rounded" placeholder="Full Name" />
-          <input type="text" class="w-full p-2 border mb-2 rounded" placeholder="Address" />
-          <input type="email" class="w-full p-2 border mb-2 rounded" placeholder="Email" />
-          <input type="tel" class="w-full p-2 border rounded" placeholder="Phone" />
+          <input id="senderName" type="text" class="w-full p-2 border mb-2 rounded" placeholder="Full Name" required />
+          <input id="senderAddress" type="text" class="w-full p-2 border mb-2 rounded" placeholder="Address" required />
+          <input id="senderEmail" type="email" class="w-full p-2 border mb-2 rounded" placeholder="Email" required />
+          <input id="senderPhone" type="tel" class="w-full p-2 border rounded" placeholder="Phone" required />
         </div>
         <div>
           <h3 class="font-semibold mb-2">Receiver Info</h3>
-          <input type="text" class="w-full p-2 border mb-2 rounded" placeholder="Full Name" />
-          <input type="text" class="w-full p-2 border mb-2 rounded" placeholder="Address" />
-          <input type="email" class="w-full p-2 border mb-2 rounded" placeholder="Email" />
-          <input type="tel" class="w-full p-2 border rounded" placeholder="Phone" />
+          <input id="receiverName" type="text" class="w-full p-2 border mb-2 rounded" placeholder="Full Name" required />
+          <input id="receiverAddress" type="text" class="w-full p-2 border mb-2 rounded" placeholder="Address" required />
+          <input id="receiverEmail" type="email" class="w-full p-2 border mb-2 rounded" placeholder="Email" required />
+          <input id="receiverPhone" type="tel" class="w-full p-2 border rounded" placeholder="Phone" required />
         </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <input type="text" class="p-3 border rounded" placeholder="From (City, Country)" />
-        <input type="text" class="p-3 border rounded" placeholder="To (City, Country)" />
-        <select class="p-3 border rounded">
-          <option>Status</option>
+        <input id="fromLocation" type="text" class="p-3 border rounded" placeholder="From (City, Country)" required />
+        <input id="toLocation" type="text" class="p-3 border rounded" placeholder="To (City, Country)" required />
+        <select id="status" class="p-3 border rounded" required>
+          <option value="" disabled selected>Status</option>
           <option>In Transit</option>
           <option>Delivered</option>
           <option>On Hold</option>
         </select>
       </div>
 
-      <button class="bg-blue-700 text-white px-6 py-3 rounded hover:bg-blue-800 transition">Submit Parcel</button>
+      <button type="submit" class="bg-blue-700 text-white px-6 py-3 rounded hover:bg-blue-800 transition">Submit Parcel</button>
     </form>
+
+    <h2 class="text-3xl font-bold my-8">📊 Parcel Management Dashboard</h2>
+
+    <div class="overflow-x-auto bg-white rounded shadow">
+      <table class="min-w-full text-sm">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="text-left p-3">Tracking #</th>
+            <th class="text-left p-3">Status</th>
+            <th class="text-left p-3">From</th>
+            <th class="text-left p-3">To</th>
+            <th class="text-left p-3">Location</th>
+            <th class="text-left p-3">Sender</th>
+            <th class="text-left p-3">Receiver</th>
+            <th class="text-left p-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="parcelTableBody">
+          <!-- Parcels will appear here dynamically -->
+        </tbody>
+      </table>
+    </div>
   </main>
+
+  <script>
+    const parcelForm = document.getElementById('parcelForm');
+    const parcelTableBody = document.getElementById('parcelTableBody');
+
+    // Keep parcels in an array in-memory
+    let parcels = [];
+
+    // Helper function to create a status badge color
+    function getStatusBadge(status) {
+      const statusColors = {
+        'In Transit': 'bg-yellow-400 text-white',
+        'Delivered': 'bg-green-600 text-white',
+        'On Hold': 'bg-red-600 text-white',
+      };
+      const colorClass = statusColors[status] || 'bg-gray-400 text-white';
+      return `<span class="px-2 py-1 rounded ${colorClass}">${status}</span>`;
+    }
+
+    // Helper function to render parcels in table
+    function renderParcels() {
+      parcelTableBody.innerHTML = '';
+      parcels.forEach((parcel, index) => {
+        parcelTableBody.innerHTML += `
+          <tr class="hover:bg-gray-50">
+            <td class="p-3">${parcel.trackingNumber}</td>
+            <td class="p-3">${getStatusBadge(parcel.status)}</td>
+            <td class="p-3">${parcel.fromLocation}</td>
+            <td class="p-3">${parcel.toLocation}</td>
+            <td class="p-3">${parcel.currentLocation || '-'}</td>
+            <td class="p-3">
+              <div>
+                <p><strong>${parcel.senderName}</strong></p>
+                <p>${parcel.senderAddress}</p>
+                <p>${parcel.senderEmail}</p>
+                <p>${parcel.senderPhone}</p>
+              </div>
+            </td>
+            <td class="p-3">
+              <div>
+                <p><strong>${parcel.receiverName}</strong></p>
+                <p>${parcel.receiverAddress}</p>
+                <p>${parcel.receiverEmail}</p>
+                <p>${parcel.receiverPhone}</p>
+              </div>
+            </td>
+            <td class="p-3 space-x-2">
+              <button data-index="${index}" class="holdBtn px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">Hold</button>
+              <button data-index="${index}" class="deleteBtn px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700">Delete</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      // Attach event listeners to newly created buttons
+      document.querySelectorAll('.holdBtn').forEach(btn => {
+        btn.onclick = () => {
+          const i = btn.getAttribute('data-index');
+          parcels[i].status = parcels[i].status === 'On Hold' ? 'In Transit' : 'On Hold';
+          renderParcels();
+        };
+      });
+
+      document.querySelectorAll('.deleteBtn').forEach(btn => {
+        btn.onclick = () => {
+          const i = btn.getAttribute('data-index');
+          parcels.splice(i, 1);
+          renderParcels();
+        };
+      });
+    }
+
+    parcelForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      // Create parcel object from form data
+      const newParcel = {
+        trackingNumber: document.getElementById('trackingNumber').value.trim(),
+        senderName: document.getElementById('senderName').value.trim(),
+        senderAddress: document.getElementById('senderAddress').value.trim(),
+        senderEmail: document.getElementById('senderEmail').value.trim(),
+        senderPhone: document.getElementById('senderPhone').value.trim(),
+
+        receiverName: document.getElementById('receiverName').value.trim(),
+        receiverAddress: document.getElementById('receiverAddress').value.trim(),
+        receiverEmail: document.getElementById('receiverEmail').value.trim(),
+        receiverPhone: document.getElementById('receiverPhone').value.trim(),
+
+        fromLocation: document.getElementById('fromLocation').value.trim(),
+        toLocation: document.getElementById('toLocation').value.trim(),
+        status: document.getElementById('status').value,
+        currentLocation: document.getElementById('fromLocation').value.trim(), // default current location same as fromLocation
+      };
+
+      parcels.push(newParcel);
+      renderParcels();
+      parcelForm.reset();
+    });
+
+    // Initial render (empty)
+    renderParcels();
+  </script>
 </body>
 </html>
